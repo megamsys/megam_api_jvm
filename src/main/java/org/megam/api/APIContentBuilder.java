@@ -15,6 +15,7 @@
  */
 package org.megam.api;
 
+import java.io.*;
 import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
@@ -43,7 +44,7 @@ public class APIContentBuilder {
 	public static final String APIKEY = "X_Megam_APIKEY";
 	public static final String ACCEPT = "Accept";
 	public static final String HMAC = "X_Megam_HMAC";
-	private final static String HMAC_SHA1_ALGORITHM = "HmacSHA1";
+	private final static String HMAC_SHA1_ALGORITHM = "RAW";
 	private Map<String, String> headers = new HashMap<String, String>();	
 	private final static String DATE_FORMAT = "EEE, d MMM yyyy HH:mm:ss z";	
 	
@@ -53,18 +54,18 @@ public class APIContentBuilder {
 	}
 
 	public void header(String urlSuffix) {
+		String contentToEncode = "{\"comment\" : {\"message\":\"blaat\" , \"from\":\"blaat\" , \"commentFor\":123}}";
 		URL path = new URL("https://api.megam.co/v1/" + urlSuffix);
 		String currentDate = new SimpleDateFormat(DATE_FORMAT).format(new Date());
-	    String signWithHMAC = currentDate + "\n" + path + "\n" + calculateMD5(contentToEncodeOpt);
+	    String signWithHMAC = currentDate + "\n" + path + "\n" + calculateMD5(contentToEncode);
 			
-		//String signedWithHMAC = calculateHMAC((headerMap.getOrElse(X_Megam_APIKEY, "blank_key")), signWithHMAC)
-       // String hmac = calculatedHMAC();
+		String signedWithHMAC = calculateHMAC(api_key, signWithHMAC);
+       
 	}
 
 	private String calculatedHMAC(String secret, String data)
 			throws APIContentException {
-		SecretKeySpec signingKey = new SecretKeySpec(secret.getBytes(),
-				HMAC_SHA1_ALGORITHM);
+		SecretKeySpec signingKey = new SecretKeySpec(secret.getBytes(),	HMAC_SHA1_ALGORITHM);
 		Mac mac = Mac.getInstance(HMAC_SHA1_ALGORITHM);
 		mac.init(signingKey);
 		byte[] rawHmac = mac.doFinal(data.getBytes());
@@ -72,8 +73,7 @@ public class APIContentBuilder {
 		return result;
 	}
 
-	private String calculateMD5(String contentToEncode)
-			throws APIContentException {
+	private String calculateMD5(String contentToEncode)	throws APIContentException {
 		MessageDigest digest = MessageDigest.getInstance("MD5");
 		digest.update(contentToEncode.getBytes());
 		String result = new String(Base64.encodeBase64(digest.digest()));
