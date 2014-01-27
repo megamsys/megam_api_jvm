@@ -13,18 +13,18 @@
 ** See the License for the specific language governing permissions and
 ** limitations under the License.
 */
-package org.megam.api.exception;
+package org.megam.api.info;
 
 /**
- * Superclass of all the exceptions. All the thrown exceptions in megam_chef gets grouped to 
- * this class.
  * @author ram
  *
  */
-public class MegamAPIJVMException extends Throwable {
+public class NodeInfo implements JSONAble {
 	
-	public MegamAPIJVMException(String str, Throwable that) {
-		super(str, that);
+	//use gson to make it as JSON
+	
+	public String json() {
+		return null;
 	}
 
 }

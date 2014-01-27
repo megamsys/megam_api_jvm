@@ -16,12 +16,15 @@
 package org.megam.api.exception;
 
 /**
- * @author rajthilak
+ * Superclass of all the exceptions. All the thrown exceptions in megam_chef gets grouped to 
+ * this class.
+ * @author ram
  *
  */
-public class APIContentException extends APIException {
+public class APIException extends Throwable {
+	
+	public APIException(String str, Throwable that) {
+		super(str, that);
+	}
 
-	public APIContentException(Throwable throwable) {
-        super("", throwable);
-    }
 }

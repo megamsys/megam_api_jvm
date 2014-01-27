@@ -16,12 +16,12 @@
 package org.megam.api.exception;
 
 /**
- * @author rajthilak
+ * @author ram
  *
  */
-public class APIContentException extends APIException {
+public class APIInvokeException extends APIException {
 
-	public APIContentException(Throwable throwable) {
-        super("", throwable);
+	public APIInvokeException(String str, Throwable throwable) {
+        super(str, throwable);
     }
 }

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry excluding="src/main/java/org/megam/api/|src/main/java/org/megam/|src/main/java/org/|src/main/java/|src/test/java/" kind="src" path=""/>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/test/java"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

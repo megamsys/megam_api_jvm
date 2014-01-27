@@ -20,12 +20,15 @@ import java.net.URL;
 import java.security.GeneralSecurityException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.InvalidKeyException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
+import java.net.MalformedURLException;
+import org.apache.http.entity.ContentType;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.http.entity.ContentType;
 import org.megam.api.exception.APIContentException;
 
 import javax.crypto.Mac;
@@ -38,34 +41,80 @@ import javax.crypto.spec.SecretKeySpec;
 public class APIContentBuilder {
 	private String email;
 	private String api_key;
-	public static final String DATE = "X_Megam_DATE";
-	public static final String CONTENT_TYPE = "Content_Type";
-	public static final String EMAIL = "X_Megam_EMAIL";
-	public static final String APIKEY = "X_Megam_APIKEY";
+	public static final String DATE = "X-Megam-DATE";
+	public static final String CONTENT_TYPE = "Content-Type";
+	public static final String EMAIL = "X-Megam-EMAIL";
+	public static final String APIKEY = "X-Megam-APIKEY";
 	public static final String ACCEPT = "Accept";
-	public static final String HMAC = "X_Megam_HMAC";
-	private final static String HMAC_SHA1_ALGORITHM = "RAW";
-	private Map<String, String> headers = new HashMap<String, String>();	
-	private final static String DATE_FORMAT = "EEE, d MMM yyyy HH:mm:ss z";	
-	
+	public static final String HMAC = "X-Megam-HMAC";
+	private final static String HMAC_SHA1_ALGORITHM = "HmacSHA1";
+	private Map<String, String> headers = new HashMap<String, String>();
+	private final static String DATE_FORMAT = "EEE, d MMM yyyy HH:mm:ss z";
+	protected String signedWithHMAC, bdy;
+	private static String path = null;
+	private String currentDate = new SimpleDateFormat(DATE_FORMAT)
+			.format(new Date());
+
 	public APIContentBuilder(String email, String api_key) {
 		this.email = email;
 		this.api_key = api_key;
 	}
 
-	public void header(String urlSuffix) {
-		String contentToEncode = "{\"comment\" : {\"message\":\"blaat\" , \"from\":\"blaat\" , \"commentFor\":123}}";
-		URL path = new URL("https://api.megam.co/v1/" + urlSuffix);
-		String currentDate = new SimpleDateFormat(DATE_FORMAT).format(new Date());
-	    String signWithHMAC = currentDate + "\n" + path + "\n" + calculateMD5(contentToEncode);
-			
-		String signedWithHMAC = calculateHMAC(api_key, signWithHMAC);
-       
+	public void setHeadersAndBody(String jsonBody, String urlSuffix)
+			throws NoSuchAlgorithmException, MalformedURLException,
+			InvalidKeyException {
+		String hdr = header(urlSuffix);
+		String hmac = null;
+		if (jsonBody != null) {
+			bdy = calculateMD5(jsonBody);
+			String toSign = hdr + "\n" + calculateMD5(jsonBody);
+			signedWithHMAC = calculateHMAC(api_key, toSign);
+		} // else {
+			// throw new APIContentException("Body is null");
+			// }
+		setHeaders();
 	}
 
-	private String calculatedHMAC(String secret, String data)
-			throws APIContentException {
-		SecretKeySpec signingKey = new SecretKeySpec(secret.getBytes(),	HMAC_SHA1_ALGORITHM);
+	public String getBody() {
+		return bdy;
+	}
+
+	protected String getHMACValue() {
+		return email + ":" + signedWithHMAC;
+	}
+
+	public void setHeaders() {
+		headers.put(DATE, currentDate);
+		// headers.put(CONTENT_TYPE, ContentType.APPLICATION_JSON);
+		headers.put(EMAIL, email);
+		headers.put(APIKEY, api_key);
+		headers.put(ACCEPT, "application/vnd.megam+json");
+		headers.put(HMAC, getHMACValue());
+	}
+
+	public void setPath(String urlSuffix) throws MalformedURLException {
+		// path = new URL("https://api.megam.co/v1/" + urlSuffix);
+		path = "https://api.megam.co/v1/" + urlSuffix;
+	}
+
+	public String getPath() {
+		return path;
+	}
+
+	public Map<String, String> getHeaders() {
+		return headers;
+	}
+
+	private String header(String urlSuffix) throws MalformedURLException {
+		setPath(urlSuffix);
+		String signWithHMAC = currentDate + "\n" + path;
+		return signWithHMAC;
+	}
+
+	private String calculateHMAC(String secret, String data)
+			throws NoSuchAlgorithmException, InvalidKeyException {
+		SecretKeySpec signingKey = new SecretKeySpec(secret.getBytes(),
+				HMAC_SHA1_ALGORITHM);
 		Mac mac = Mac.getInstance(HMAC_SHA1_ALGORITHM);
 		mac.init(signingKey);
 		byte[] rawHmac = mac.doFinal(data.getBytes());
@@ -73,7 +122,8 @@ public class APIContentBuilder {
 		return result;
 	}
 
-	private String calculateMD5(String contentToEncode)	throws APIContentException {
+	private String calculateMD5(String contentToEncode)
+			throws NoSuchAlgorithmException {
 		MessageDigest digest = MessageDigest.getInstance("MD5");
 		digest.update(contentToEncode.getBytes());
 		String result = new String(Base64.encodeBase64(digest.digest()));

@@ -15,26 +15,24 @@
  */
 package org.megam.api;
 
+import static org.junit.Assert.*;
+
+import java.io.IOException;
+
+import org.junit.Before;
+import org.junit.Test;
+import org.megam.api.APIClient;
+import java.security.NoSuchAlgorithmException;
+import java.net.MalformedURLException;
+import java.security.InvalidKeyException;
 /**
  * @author rajthilak
  * 
  */
-public class APIBaseClient {
-	
-	private String email;
-	private String api_key;
-	
-	public APIBaseClient(String email, String api_key) {
-		this.email = email;
-		this.api_key = api_key;
+public class APIClientTest {
+
+	@Test
+	public void test() throws NoSuchAlgorithmException, MalformedURLException, InvalidKeyException, IOException {
+		new APIClient("sandy@megamsandbox.com", "IamAtlas{74}NobodyCanSeeME#07").post();
 	}
-	
-	public void create() {
-		//header = new APIContentBuilder(email, api_key).header();
-	}
-	
-	public void execute() {
-		
-	}
-	
 }

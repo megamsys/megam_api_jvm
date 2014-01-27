@@ -13,31 +13,21 @@
  ** See the License for the specific language governing permissions and
  ** limitations under the License.
  */
-package org.megam.api;
+package org.megam.api.result;
+
+import org.megam.api.info.JSONAble;
+import org.megam.api.info.NodeInfo;
 
 /**
- * @author rajthilak
+ * @author ram
  * 
  */
-//public class Nodes  extends APIInvoker implements APIFascade {
-public class Nodes implements APIFascade {
-	private APIContentBuilder content;
-	
-	public Nodes(APIContentBuilder tmpContent) {
-		this.content = tmpContent;
-	}
+public class NodeResult implements JSONAble {
 
-	/* (non-Javadoc)
-	 * @see org.megam.api.APIFascade#list()
-	 */
-	@Override
-	public <S> S list() {
-		// TODO Auto-generated method stub
+	// use gson to make it as JSON
+
+	public String json() {
 		return null;
 	}
-	
-	//public<NodeResult> NodeResult post<NodeInfo>(NodeInfo ni) throws APIInvokeException {
-		
-	//}
-	
+
 }
