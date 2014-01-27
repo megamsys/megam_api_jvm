@@ -19,6 +19,16 @@ package org.megam.api;
  * @author rajthilak
  * 
  */
-public class Nodes {
+public class Nodes  extends APIInvoker implements APIFascade {
+	
+	private APIContentBuilder content;
+	
+	public Nodes(APIContentBuilder tmpContent) {
+		this.content = tmpContent
+	}
+	
+	public<NodeResult> NodeResult post<NodeInfo>(NodeInfo ni) throws APIInvokeException {
+		
+	}
 	
 }

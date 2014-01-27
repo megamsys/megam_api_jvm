@@ -13,15 +13,18 @@
 ** See the License for the specific language governing permissions and
 ** limitations under the License.
 */
-package org.megam.api.exception;
+package org.megam.api.info;
 
 /**
- * @author rajthilak
+ * @author ram
  *
  */
-public class APIContentException extends APIException {
+public class NodeInfo implements JSONAble {
+	
+	//use gson to make it as JSON
+	
+	public String json() {
+		return null;
+	}
 
-	public APIContentException(String str, Throwable throwable) {
-        super(str, throwable);
-    }
 }

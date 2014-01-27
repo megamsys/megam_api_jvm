@@ -23,13 +23,15 @@ public class APIClient {
 	
 	private String email;
 	private String api_key;
+	private APIContentBuilder content;
 	
 	public APIClient(String email, String api_key) {
 		this.email = email;
 		this.api_key = api_key;
+		create();
 	}
 	
 	public void create() {
-		//return new APIBaseClient(email, api_key);
+		content = new APIContentBuilder(email, api_key);
 	}
 }

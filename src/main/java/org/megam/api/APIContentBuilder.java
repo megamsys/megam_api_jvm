@@ -44,21 +44,37 @@ public class APIContentBuilder {
 	public static final String ACCEPT = "Accept";
 	public static final String HMAC = "X_Megam_HMAC";
 	private final static String HMAC_SHA1_ALGORITHM = "HmacSHA1";
-	private Map<String, String> headers = new HashMap<String, String>();	
-	private final static String DATE_FORMAT = "EEE, d MMM yyyy HH:mm:ss z";	
-	
+	private Map<String, String> headers = new HashMap<String, String>();
+	private final static String DATE_FORMAT = "EEE, d MMM yyyy HH:mm:ss z";
+	private String signedHMAC;
+
 	public APIContentBuilder(String email, String api_key) {
 		this.email = email;
 		this.api_key = api_key;
 	}
 
-	public void header(String urlSuffix) {
+	public void setBody(String jsonBody) {
+		String hdr = header(urlSuffix);
+		String hmac = null;
+		if (jsonBody != null) {
+			String bdy = hdr + "\n" + calculateMD5(jsonBody);
+			 /*String signedWithHMAC =
+		     calculateHMAC((headerMap.getOrElse(X_Megam_APIKEY, "blank_key")),
+			 signWithHMAC)
+			hmac = calculatedHMAC();*/
+		} else {
+			throw new APIContentException("Body is null");
+		}
+	}
+	
+	protected String signedHMAC() {
+		return signedHMAC;
+	}
+
+	private String header(String urlSuffix) {
 		URL path = new URL("https://api.megam.co/v1/" + urlSuffix);
 		String currentDate = new SimpleDateFormat(DATE_FORMAT).format(new Date());
-	    String signWithHMAC = currentDate + "\n" + path + "\n" + calculateMD5(contentToEncodeOpt);
-			
-		//String signedWithHMAC = calculateHMAC((headerMap.getOrElse(X_Megam_APIKEY, "blank_key")), signWithHMAC)
-       // String hmac = calculatedHMAC();
+	    String signWithHMAC = currentDate + "\n" + path 
 	}
 
 	private String calculatedHMAC(String secret, String data)

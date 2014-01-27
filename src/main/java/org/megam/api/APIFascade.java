@@ -13,15 +13,16 @@
 ** See the License for the specific language governing permissions and
 ** limitations under the License.
 */
-package org.megam.api.exception;
+package org.megam.api;
 
 /**
- * @author rajthilak
+ * @author ram
  *
  */
-public class APIContentException extends APIException {
+public interface APIFascade {
+	
+	public<S> S post<T>(T) throws APIInvokeException;
+	
+	public<S> S list() throws APIInvokeException;
 
-	public APIContentException(String str, Throwable throwable) {
-        super(str, throwable);
-    }
 }

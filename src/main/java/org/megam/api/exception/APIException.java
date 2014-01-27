@@ -13,15 +13,18 @@
 ** See the License for the specific language governing permissions and
 ** limitations under the License.
 */
-package org.megam.api.exception;
+package src.main.java.org.megam.api.exception;
 
 /**
- * @author rajthilak
+ * Superclass of all the exceptions. All the thrown exceptions in megam_chef gets grouped to 
+ * this class.
+ * @author ram
  *
  */
-public class APIContentException extends APIException {
+public class APIException extends Throwable {
+	
+	public APIException(String str, Throwable that) {
+		super(str, that);
+	}
 
-	public APIContentException(String str, Throwable throwable) {
-        super(str, throwable);
-    }
 }

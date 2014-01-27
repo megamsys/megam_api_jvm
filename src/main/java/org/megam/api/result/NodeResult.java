@@ -13,28 +13,21 @@
  ** See the License for the specific language governing permissions and
  ** limitations under the License.
  */
-package org.megam.api;
+package org.megam.api.result;
+
+import org.megam.api.info.JSONAble;
+import org.megam.api.info.String;
 
 /**
- * @author rajthilak
+ * @author ram
  * 
  */
-public class APIBaseClient {
-	
-	private String email;
-	private String api_key;
-	
-	public APIBaseClient(String email, String api_key) {
-		this.email = email;
-		this.api_key = api_key;
+public class NodeResult implements JSONAble {
+
+	// use gson to make it as JSON
+
+	public String json() {
+		return null;
 	}
-	
-	public void create() {
-		//header = new APIContentBuilder(email, api_key).header();
-	}
-	
-	public void execute() {
-		
-	}
-	
+
 }
