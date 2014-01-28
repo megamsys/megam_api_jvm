@@ -31,6 +31,11 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.http.entity.ContentType;
 import org.megam.api.exception.APIContentException;
 
+import java.security.NoSuchAlgorithmException;
+import java.net.MalformedURLException;
+import java.security.InvalidKeyException;
+
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -39,76 +44,71 @@ import javax.crypto.spec.SecretKeySpec;
  * 
  */
 public class APIContentBuilder {
-	private String email;
-	private String api_key;
+
 	public static final String DATE = "X-Megam-DATE";
 	public static final String CONTENT_TYPE = "Content-Type";
 	public static final String EMAIL = "X-Megam-EMAIL";
 	public static final String APIKEY = "X-Megam-APIKEY";
 	public static final String ACCEPT = "Accept";
 	public static final String HMAC = "X-Megam-HMAC";
+	public static final String VND_MEGAM_JSON = "application/vnd.megam+json";
 	private final static String HMAC_SHA1_ALGORITHM = "HmacSHA1";
-	private Map<String, String> headers = new HashMap<String, String>();
-	private final static String DATE_FORMAT = "EEE, d MMM yyyy HH:mm:ss z";
-	protected String signedWithHMAC, bdy;
-	private static String path = null;
-	private String currentDate = new SimpleDateFormat(DATE_FORMAT)
-			.format(new Date());
+	private final static String API_GATEWAY = "https://api.megam.co/v1/";
+
+	private String email;
+	private String api_key;
+
+	private Map<String, String> headersAndBody = new HashMap<String, String>();
+
+	private static String urlSuffix = "";
 
 	public APIContentBuilder(String email, String api_key) {
 		this.email = email;
 		this.api_key = api_key;
 	}
 
-	public void setHeadersAndBody(String jsonBody, String urlSuffix)
-			throws NoSuchAlgorithmException, MalformedURLException,
-			InvalidKeyException {
-		String hdr = header(urlSuffix);
-		String hmac = null;
-		if (jsonBody != null) {
-			bdy = calculateMD5(jsonBody);
-			String toSign = hdr + "\n" + calculateMD5(jsonBody);
-			signedWithHMAC = calculateHMAC(api_key, toSign);
-		} // else {
-			// throw new APIContentException("Body is null");
-			// }
-		setHeaders();
-	}
+	public void buildHeadersAndBody(String jsonBody, String tmpurlSuffix)
+			throws APIContentException {
+		urlSuffix = tmpurlSuffix;
+		try {
+			String DATE_FORMAT = "EEE, d MMM yyyy HH:mm:ss z";
+			String currentDate = new SimpleDateFormat(DATE_FORMAT)
+					.format(new Date());
 
-	public String getBody() {
-		return bdy;
-	}
-
-	protected String getHMACValue() {
-		return email + ":" + signedWithHMAC;
-	}
-
-	public void setHeaders() {
-		headers.put(DATE, currentDate);
-		// headers.put(CONTENT_TYPE, ContentType.APPLICATION_JSON);
-		headers.put(EMAIL, email);
-		headers.put(APIKEY, api_key);
-		headers.put(ACCEPT, "application/vnd.megam+json");
-		headers.put(HMAC, getHMACValue());
-	}
-
-	public void setPath(String urlSuffix) throws MalformedURLException {
-		// path = new URL("https://api.megam.co/v1/" + urlSuffix);
-		path = "https://api.megam.co/v1/" + urlSuffix;
+			String timeStampedPath = currentDate + "\n" + getPath();
+			String signedWithHMAC = null;
+			if (jsonBody != null) {
+				String md5Body = calculateMD5(jsonBody);
+				String toSign = timeStampedPath + "\n" + md5Body;
+				signedWithHMAC = calculateHMAC(api_key, toSign);
+			}
+			if (signedWithHMAC != null) {
+				stickHeaderMap(currentDate, getFullHMAC(signedWithHMAC));
+			} else {
+				throw new IllegalArgumentException(
+						"No arguments found to sign.");
+			}
+		} catch (NoSuchAlgorithmException nsae) {
+			throw new APIContentException(nsae);
+		} catch (InvalidKeyException inke) {
+			throw new APIContentException(inke);
+		}
 	}
 
 	public String getPath() {
-		return path;
+		return API_GATEWAY + urlSuffix;
 	}
 
-	public Map<String, String> getHeaders() {
-		return headers;
+	private String getFullHMAC(String tmpSignedWithHMAC) {
+		return email + ":" + tmpSignedWithHMAC;
 	}
 
-	private String header(String urlSuffix) throws MalformedURLException {
-		setPath(urlSuffix);
-		String signWithHMAC = currentDate + "\n" + path;
-		return signWithHMAC;
+	private void stickHeaderMap(String date, String fullHMAC) {
+		headersAndBody.put(DATE, date);
+		headersAndBody.put(EMAIL, email);
+		headersAndBody.put(APIKEY, api_key);
+		headersAndBody.put(ACCEPT, VND_MEGAM_JSON);
+		headersAndBody.put(HMAC, fullHMAC);
 	}
 
 	private String calculateHMAC(String secret, String data)
@@ -128,6 +128,14 @@ public class APIContentBuilder {
 		digest.update(contentToEncode.getBytes());
 		String result = new String(Base64.encodeBase64(digest.digest()));
 		return result;
+	}
+
+	public Map<String, String> getSignedHeadersAndBody() {
+		return headersAndBody;
+	}
+
+	public String toString() {
+		return null;
 	}
 
 }

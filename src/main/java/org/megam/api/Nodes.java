@@ -15,29 +15,49 @@
  */
 package org.megam.api;
 
+import javax.inject.Inject;
+import java.util.MissingResourceException;
+import org.megam.api.exception.APIContentException;
+import org.megam.api.exception.APIInvokeException;
+
 /**
  * @author rajthilak
  * 
  */
-//public class Nodes  extends APIInvoker implements APIFascade {
 public class Nodes implements APIFascade {
-	private APIContentBuilder content;
-	
-	public Nodes(APIContentBuilder tmpContent) {
-		this.content = tmpContent;
+
+	private static final String GET = "/nodes";
+	private static final String POST = "/nodes/content";
+
+	@Inject
+	private APIClient client;
+
+	public Nodes() {
 	}
 
-	/* (non-Javadoc)
-	 * @see org.megam.api.APIFascade#list()
-	 */
 	@Override
-	public <S> S list() {
-		// TODO Auto-generated method stub
-		return null;
+	public <NodeResult> NodeResult list() throws APIInvokeException {
+		if (client == null) {
+			throw new MissingResourceException(
+					"Make sure an APIClient is instantiated before you call Node.",
+					"APIClient", "client");
+		}
+		try {
+			String pass_parms_in_input_info = null;
+			// converti ti to json
+			// Gson obj = new GsonBuilder().setPrettyPrinting().create();
+
+			client.execute(client.builder(GET, pass_parms_in_input_info));
+			// covert the result back to NodeResult.
+			return null;
+		} catch (APIContentException apce) {
+			throw new APIInvokeException("",apce);
+		}
 	}
-	
-	//public<NodeResult> NodeResult post<NodeInfo>(NodeInfo ni) throws APIInvokeException {
-		
-	//}
-	
+
+	// public<NodeResult> NodeResult post<NodeInfo>(NodeInfo ni) throws
+	// APIInvokeException {
+
+	// }
+
 }
