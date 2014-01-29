@@ -19,7 +19,7 @@ import javax.inject.Inject;
 
 import java.util.MissingResourceException;
 
-import org.megam.api.result.NodeResult;
+import org.megam.api.result.AppDefnResult;
 import org.megam.api.exception.APIContentException;
 import org.megam.api.exception.APIInvokeException;
 import org.megam.api.info.NodeInfo;
@@ -36,39 +36,39 @@ import org.json.simple.parser.JSONParser;
  * @author rajthilak
  * 
  */
-public class Nodes<N extends APIFascade> {
+public class AppDefns<A extends APIFascade> {
 
-	private static final String GET = "/nodes";
-	private static final String POST = "/nodes/content";
-	private NodeResult req;
+	private static final String GET = "/appdefns";
+	private static final String POST = "/appdefns/content";
+	private AppDefnResult res;
+
 	@Inject
 	private APIClient client;
 	private Logger logger = LoggerFactory.getLogger(Nodes.class);
-	public Nodes(APIClient client) {
+	public AppDefns(APIClient client) {
 		this.client = client;
 	}
 
-	
-	public <N> N list(String nodeName) throws APIInvokeException {
-		if (client == null) {
-			throw new MissingResourceException(
-					"Make sure an APIClient is instantiated before you call Node.",
-					"APIClient", "client");
-		}
+	public <A> A list(String appdefns_id) throws APIInvokeException {
 		try {
+			logger.debug("AppDefns Entry <------->");
+			if (client == null) {
+				throw new MissingResourceException(
+						"Make sure an APIClient is instantiated before you call Node.",
+						"APIClient", "client");
+			}
 			String pass_parms_in_input_info = "";
-			logger.debug("Node Entry <------->");
-			String jsonString = client.execute("GET", client.builder(GET + "/" + nodeName, pass_parms_in_input_info));			
+			String jsonString = client.execute("GET", client.builder(GET + "/" + appdefns_id, pass_parms_in_input_info));
 			System.out.println(jsonString);
-			return (N) new NodeResult(jsonString);
+			return (A) new AppDefnResult(jsonString);
 		} catch (APIContentException apce) {
 			throw new APIInvokeException("", apce);
-		}		
+		} 
 	}
 
-	 public <NodeResult> NodeResult post(NodeInfo ni){
-          return null;
-	 }
-	
+	public <AppDefnResult> AppDefnResult post(NodeInfo ni)
+			throws APIInvokeException {
+           return null;
+	}
 
 }

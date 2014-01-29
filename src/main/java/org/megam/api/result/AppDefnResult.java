@@ -26,39 +26,38 @@ import org.json.simple.parser.JSONParser;
 import org.megam.api.exception.APIInvokeException;
 import org.megam.api.info.JSONAble;
 import org.megam.api.info.NodeInfo;
+
 /**
- * @author ram
+ * @author rajthilak
  * 
  */
-public class NodeResult implements JSONAble {
-
+public class AppDefnResult {
 	private String jsonString;
 	private JSONObject json;
-	
-	public NodeResult(String jsonString) throws APIInvokeException{
+
+	public AppDefnResult(String jsonString) throws APIInvokeException{
 		this.jsonString = jsonString;
 		jsonParser();
 	}
-	
+
 	public String json() {
 		return jsonString;
+
 	}
-	
+
 	public JSONObject getJson() {
 		return json;
 	}
-	
-	public void jsonParser() throws APIInvokeException{
+
+	public void jsonParser() throws APIInvokeException{ 
 		try {
-		JSONParser parser=new JSONParser();
-		Object object = parser.parse(jsonString);		
-		JSONObject tot_json = (JSONObject) object;
-		JSONArray res_json = (JSONArray) tot_json.get("results");
-		json = (JSONObject)res_json.get(0);	    
+		JSONParser parser = new JSONParser();
+		Object object = parser.parse(jsonString);
+		JSONObject tot_json = (JSONObject) object;		
+		json = tot_json;
 		}
 		catch (ParseException pe) {
 			throw new APIInvokeException("", pe);
 		}
 	}
-
 }

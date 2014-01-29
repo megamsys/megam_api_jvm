@@ -22,6 +22,9 @@ import java.io.IOException;
 import org.junit.Before;
 import org.junit.Test;
 import org.megam.api.APIClient;
+import org.megam.api.exception.APIContentException;
+import org.megam.api.exception.APIInvokeException;
+
 import java.security.NoSuchAlgorithmException;
 import java.net.MalformedURLException;
 import java.security.InvalidKeyException;
@@ -32,7 +35,9 @@ import java.security.InvalidKeyException;
 public class APIClientTest {
 
 	@Test
-	public void test() throws NoSuchAlgorithmException, MalformedURLException, InvalidKeyException, IOException {
-		new APIClient("sandy@megamsandbox.com", "IamAtlas{74}NobodyCanSeeME#07").post();
+	public void test() throws APIInvokeException, APIContentException {
+		APIClient build = new APIClient("sandy@megamsandbox.com", "IamAtlas{74}NobodyCanSeeME#07");
+	    //build.execute(build.builder("nodes/sandy@megamsandbox.com", "{\"email\":\"sandy@megamsandbox.com\", \"api_key\":\"IamAtlas{74}NobodyCanSeeME#075488\", \"authority\":\"user\" }"));
+		//build.execute(build.builder("nodes/appsample2.megam.co", ""));
 	}
 }

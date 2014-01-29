@@ -53,7 +53,8 @@ public class APIContentBuilder {
 	public static final String HMAC = "X-Megam-HMAC";
 	public static final String VND_MEGAM_JSON = "application/vnd.megam+json";
 	private final static String HMAC_SHA1_ALGORITHM = "HmacSHA1";
-	private final static String API_GATEWAY = "https://api.megam.co/v1/";
+	private final static String API_GATEWAY = "https://api.megam.co";
+	private final static String API_GATEWAY_VERSION = "/v1";
 
 	private String email;
 	private String api_key;
@@ -75,12 +76,12 @@ public class APIContentBuilder {
 			String currentDate = new SimpleDateFormat(DATE_FORMAT)
 					.format(new Date());
 
-			String timeStampedPath = currentDate + "\n" + getPath();
+			String timeStampedPath = currentDate + "\n" + API_GATEWAY_VERSION + urlSuffix;
 			String signedWithHMAC = null;
 			if (jsonBody != null) {
 				String md5Body = calculateMD5(jsonBody);
-				String toSign = timeStampedPath + "\n" + md5Body;
-				signedWithHMAC = calculateHMAC(api_key, toSign);
+				String toSign = timeStampedPath + "\n" + md5Body;				
+				signedWithHMAC = calculateHMAC(api_key, toSign);				
 			}
 			if (signedWithHMAC != null) {
 				stickHeaderMap(currentDate, getFullHMAC(signedWithHMAC));
@@ -96,7 +97,7 @@ public class APIContentBuilder {
 	}
 
 	public String getPath() {
-		return API_GATEWAY + urlSuffix;
+		return API_GATEWAY + API_GATEWAY_VERSION + urlSuffix;
 	}
 
 	private String getFullHMAC(String tmpSignedWithHMAC) {
@@ -113,12 +114,11 @@ public class APIContentBuilder {
 
 	private String calculateHMAC(String secret, String data)
 			throws NoSuchAlgorithmException, InvalidKeyException {
-		SecretKeySpec signingKey = new SecretKeySpec(secret.getBytes(),
-				HMAC_SHA1_ALGORITHM);
+		SecretKeySpec signingKey = new SecretKeySpec(secret.getBytes(), "RAW");		
 		Mac mac = Mac.getInstance(HMAC_SHA1_ALGORITHM);
-		mac.init(signingKey);
-		byte[] rawHmac = mac.doFinal(data.getBytes());
-		String result = new String(Base64.encodeBase64(rawHmac));
+		mac.init(signingKey);		
+		byte[] rawHmac = mac.doFinal(data.getBytes());		
+		String result = new String(Base64.encodeBase64(rawHmac));		
 		return result;
 	}
 
@@ -126,7 +126,7 @@ public class APIContentBuilder {
 			throws NoSuchAlgorithmException {
 		MessageDigest digest = MessageDigest.getInstance("MD5");
 		digest.update(contentToEncode.getBytes());
-		String result = new String(Base64.encodeBase64(digest.digest()));
+		String result = new String(Base64.encodeBase64(digest.digest()));		
 		return result;
 	}
 

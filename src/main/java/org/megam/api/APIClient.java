@@ -19,13 +19,16 @@ import java.io.*;
 import java.lang.*;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.http.entity.ContentType;
 import org.megam.api.exception.*;
 
+import java.net.URISyntaxException;
+
 import org.megam.api.http.TransportMachinery;
 import org.megam.api.http.TransportTools;
-
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author rajthilak
@@ -35,8 +38,10 @@ public class APIClient {
 
 	private String email;
 	private String api_key;
+	private Logger logger = LoggerFactory.getLogger(APIClient.class);
 
 	public APIClient(String email, String api_key) {
+		logger.debug("<-------> API Client  <------->");
 		this.email = email;
 		this.api_key = api_key;
 	}
@@ -45,19 +50,31 @@ public class APIClient {
 			throws APIContentException {
 		APIContentBuilder content = new APIContentBuilder(email, api_key);
 		content.buildHeadersAndBody(contentToEncode, urlSuffix);
+		logger.debug("Client build http contents <------->");
 		return content;
 	}
 
-	public void execute(APIContentBuilder content) throws APIInvokeException {
+	public String execute(String httpMethod, APIContentBuilder content)
+			throws APIInvokeException {
 		try {
+			String responseBody;
 			TransportTools tst = new TransportTools(content.getPath(), null,
 					content.getSignedHeadersAndBody());
 			// tst.setContentType(ContentType.APPLICATION_JSON,
 			// contentToEncode);
-			String responseBody = TransportMachinery.post(tst).entityToString();
-			System.out.println(responseBody);
+			// String responseBody =
+			// TransportMachinery.post(tst).entityToString();
+			logger.debug("<-------> Client Transport tools  <------->");
+			if (httpMethod.equals("GET")) {
+				responseBody = TransportMachinery.get(tst).entityToString();
+			} else {
+				responseBody = TransportMachinery.post(tst).entityToString();
+			}
+			return responseBody;
 		} catch (IOException ioe) {
-			throw new APIInvokeException("...",ioe);
+			throw new APIInvokeException("...", ioe);
+		} catch (URISyntaxException use) {
+			throw new APIInvokeException("...", use);
 		}
 	}
 }

@@ -15,10 +15,59 @@
  */
 package org.megam.api;
 
+import org.megam.api.exception.APIContentException;
+import org.megam.api.exception.APIInvokeException;
+import org.megam.api.info.RequestInfo;
+import org.megam.api.result.AppDefnResult;
+import org.megam.api.result.NodeResult;
+import org.megam.api.result.RequestResult;
+import com.google.gson.Gson;
+import javax.inject.Inject;
+import org.json.simple.parser.ParseException;
+import java.util.MissingResourceException;
 /**
  * @author rajthilak
  * 
  */
-public class Requests {
+public class Requests<R extends APIFascade> {
+	
+	private NodeResult node;
+	private static final String GET = "/appreqs";
+	private static final String POST = "/appreqs/content";
+	
+	@Inject
+	private APIClient client;
+	
+	public Requests(APIClient client) {
+		this.client = client;
+	}
+	
+	/* (non-Javadoc)
+	 * @see org.megam.api.APIFascade#list()
+	 */	
+	public <RequestResult> RequestResult list(String s) {
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.megam.api.APIFascade#post(java.lang.Object)
+	 */	
+	public <R> R post(NodeResult node) throws APIInvokeException {	
+		if (client == null) {
+			throw new MissingResourceException(
+					"Make sure an APIClient is instantiated before you call Node.",
+					"APIClient", "client");
+		}
+		try {
+			AppDefnResult res = (AppDefnResult) new AppDefns(client).list((String)node.getJson().get("appdefnsid"));
+			Gson gson = new Gson();		
+			RequestInfo req_info = gson.fromJson(res.json(), RequestInfo.class);
+			String pass_parms_in_input_info = req_info.json();
+			String jsonString = client.execute("POST", client.builder(POST, pass_parms_in_input_info));			
+			return (R) new RequestResult(jsonString);			
+		} catch (APIContentException apce) {
+			throw new APIInvokeException("", apce);
+		}			
+	}	
 	
 }

@@ -21,10 +21,10 @@ import org.megam.api.exception.APIInvokeException;
  * @author ram
  *
  */
-public interface APIFascade {
+public interface APIFascade<T> {
 	
-	//public<S> S post<T>(T) throws APIInvokeException;
+	public <S> S post (T t) throws APIInvokeException;
 	
-	public<S> S list() throws APIInvokeException;
+	public <S> S list(String s) throws APIInvokeException;
 
 }
