@@ -49,7 +49,7 @@ public class Nodes<N extends APIFascade> {
 	}
 
 	
-	public <N> N list(String nodeName) throws APIInvokeException {
+	public <N> N list(String nodeName, String dummy) throws APIInvokeException {
 		if (client == null) {
 			throw new MissingResourceException(
 					"Make sure an APIClient is instantiated before you call Node.",
@@ -58,7 +58,9 @@ public class Nodes<N extends APIFascade> {
 		try {
 			String pass_parms_in_input_info = "";
 			logger.debug("Node Entry <------->");
-			String jsonString = client.execute("GET", client.builder(GET + "/" + nodeName, pass_parms_in_input_info));			
+			String jsonString = client.execute("GET", client.builder(GET + "/" + nodeName, pass_parms_in_input_info));		
+			System.out.println(GET + "/" + nodeName);
+			System.out.println(pass_parms_in_input_info);
 			System.out.println(jsonString);
 			return (N) new NodeResult(jsonString);
 		} catch (APIContentException apce) {

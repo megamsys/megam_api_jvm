@@ -25,6 +25,6 @@ public interface APIFascade<T> {
 	
 	public <S> S post (T t) throws APIInvokeException;
 	
-	public <S> S list(String s) throws APIInvokeException;
+	public <S> S list(String s, String t) throws APIInvokeException;
 
 }

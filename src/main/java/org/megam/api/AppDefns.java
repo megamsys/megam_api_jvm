@@ -49,7 +49,7 @@ public class AppDefns<A extends APIFascade> {
 		this.client = client;
 	}
 
-	public <A> A list(String appdefns_id) throws APIInvokeException {
+	public <A> A list(String appdefns_id, String nodeName) throws APIInvokeException {
 		try {
 			logger.debug("AppDefns Entry <------->");
 			if (client == null) {
@@ -58,7 +58,7 @@ public class AppDefns<A extends APIFascade> {
 						"APIClient", "client");
 			}
 			String pass_parms_in_input_info = "";
-			String jsonString = client.execute("GET", client.builder(GET + "/" + appdefns_id, pass_parms_in_input_info));
+			String jsonString = client.execute("GET", client.builder(GET + "/nodeName/" + appdefns_id, pass_parms_in_input_info));
 			System.out.println(jsonString);
 			return (A) new AppDefnResult(jsonString);
 		} catch (APIContentException apce) {

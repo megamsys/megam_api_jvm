@@ -29,9 +29,12 @@ import org.megam.api.exception.APIInvokeException;
 
 /**
  * @author rajthilak
+ * @param <node_name>
  * 
  */
 public class RequestInfo {
+	public static final String JSONCLAZ = "json_claz";
+	public static final String RESULTS = "results";
 	public static final String TIMETOKILL = "timetokill";
 	public static final String METERED = "metered";
 	public static final String LOGGING = "logging";
@@ -47,6 +50,7 @@ public class RequestInfo {
 	private String node_id;
 	private String node_name;
 	private Map<String, String> appdefns = new HashMap<String, String>();
+	//private Map<String, String> results = new HashMap<String, String>();
 	// private NodeAppDefns appdefns;
 	private String created_at;
 
@@ -56,7 +60,7 @@ public class RequestInfo {
 		try {
 		JSONObject obj = new JSONObject();
 		obj.put(REQTYPE, "build");
-		obj.put(NODENAME, getNodeName());
+		obj.put(NODENAME,  getNodeName());
 		obj.put(APPDEFNSID, getId());
 		obj.put(LCAPPLY, getRunTimeExec());
 		obj.put(LCADDITIONAL, "");
@@ -71,27 +75,28 @@ public class RequestInfo {
 		}
 	}
 
-	public String getId() {
+	public <id> String getId() {
 		return id;
 	}
 
-	public String getnodeId() {
+	public <node_id> String getnodeId() {
 		return node_id;
 	}
 
-	public String getNodeName() {
+	public <node_name> String getNodeName() {
+		System.out.println(node_name);
 		return node_name;
 	}
 
-	public String getRunTimeExec() {
+	public <RUNTIMEEXEC> String getRunTimeExec() {
 		return map().get(RUNTIMEEXEC);
 	}
 
-	public Map<String, String> map() {
+	public <appdefns> Map<String, String> map() {
 		return appdefns;
 	}
 
-	public String getCreatedAt() {
+	public <created_at> String getCreatedAt() {
 		return created_at;
 	}
 	

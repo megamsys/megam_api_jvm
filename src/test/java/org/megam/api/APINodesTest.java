@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.megam.api.exception.APIContentException;
 import org.megam.api.exception.APIInvokeException;
 import org.megam.api.result.NodeResult;
+import org.megam.api.result.RequestResult;
 
 /**
  * @author rajthilak
@@ -36,7 +37,8 @@ public class APINodesTest {
 		APIClient build = new APIClient("sandy@megamsandbox.com", "IamAtlas{74}NobodyCanSeeME#07");
 	    //build.execute(build.builder("nodes/sandy@megamsandbox.com", "{\"email\":\"sandy@megamsandbox.com\", \"api_key\":\"IamAtlas{74}NobodyCanSeeME#075488\", \"authority\":\"user\" }"));
 		//build.execute(build.builder("nodes/appsample2.megam.co", ""));
-	    new Requests(build).post((NodeResult) new Nodes(build).list("appsample1.megam.co"));
+	   RequestResult rs = (RequestResult) new Requests(build).post((NodeResult) new Nodes(build).list("alterable1.megam.co", ""));
+	   System.out.println(rs.json());
 	}
 	
 }

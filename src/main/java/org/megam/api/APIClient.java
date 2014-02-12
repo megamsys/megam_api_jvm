@@ -22,7 +22,7 @@ import java.util.Map;
 
 import org.apache.http.entity.ContentType;
 import org.megam.api.exception.*;
-
+import org.apache.http.Consts;
 import java.net.URISyntaxException;
 
 import org.megam.api.http.TransportMachinery;
@@ -39,7 +39,8 @@ public class APIClient {
 	private String email;
 	private String api_key;
 	private Logger logger = LoggerFactory.getLogger(APIClient.class);
-
+	public static final ContentType APPLICATION_JSON = org.apache.http.entity.ContentType.create(
+            "application/json", Consts.UTF_8);
 	public APIClient(String email, String api_key) {
 		logger.debug("<-------> API Client  <------->");
 		this.email = email;
@@ -64,6 +65,7 @@ public class APIClient {
 			// contentToEncode);
 			// String responseBody =
 			// TransportMachinery.post(tst).entityToString();
+			tst.setContentType(APPLICATION_JSON, content.getContent());
 			logger.debug("<-------> Client Transport tools  <------->");
 			if (httpMethod.equals("GET")) {
 				responseBody = TransportMachinery.get(tst).entityToString();

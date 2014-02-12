@@ -21,9 +21,13 @@ import org.megam.api.info.RequestInfo;
 import org.megam.api.result.AppDefnResult;
 import org.megam.api.result.NodeResult;
 import org.megam.api.result.RequestResult;
+
 import com.google.gson.Gson;
+
 import javax.inject.Inject;
+
 import org.json.simple.parser.ParseException;
+
 import java.util.MissingResourceException;
 /**
  * @author rajthilak
@@ -45,7 +49,7 @@ public class Requests<R extends APIFascade> {
 	/* (non-Javadoc)
 	 * @see org.megam.api.APIFascade#list()
 	 */	
-	public <RequestResult> RequestResult list(String s) {
+	public <RequestResult> RequestResult list(String s, String dummy) {
 		return null;
 	}
 
@@ -59,10 +63,10 @@ public class Requests<R extends APIFascade> {
 					"APIClient", "client");
 		}
 		try {
-			AppDefnResult res = (AppDefnResult) new AppDefns(client).list((String)node.getJson().get("appdefnsid"));
+			AppDefnResult res = (AppDefnResult) new AppDefns(client).list((String)node.getJson().get("appdefnsid"), (String)node.getJson().get("node_name"));
 			Gson gson = new Gson();		
 			RequestInfo req_info = gson.fromJson(res.json(), RequestInfo.class);
-			String pass_parms_in_input_info = req_info.json();
+			String pass_parms_in_input_info = req_info.json();			
 			String jsonString = client.execute("POST", client.builder(POST, pass_parms_in_input_info));			
 			return (R) new RequestResult(jsonString);			
 		} catch (APIContentException apce) {

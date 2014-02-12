@@ -55,10 +55,10 @@ public class APIContentBuilder {
 	private final static String HMAC_SHA1_ALGORITHM = "HmacSHA1";
 	private final static String API_GATEWAY = "https://api.megam.co";
 	private final static String API_GATEWAY_VERSION = "/v1";
-
+	final protected static char[] hexArray = "0123456789abcdef".toCharArray();
 	private String email;
 	private String api_key;
-
+    private String contentString;
 	private Map<String, String> headersAndBody = new HashMap<String, String>();
 
 	private static String urlSuffix = "";
@@ -81,7 +81,8 @@ public class APIContentBuilder {
 			if (jsonBody != null) {
 				String md5Body = calculateMD5(jsonBody);
 				String toSign = timeStampedPath + "\n" + md5Body;				
-				signedWithHMAC = calculateHMAC(api_key, toSign);				
+				signedWithHMAC = calculateHMAC(api_key, toSign);	
+				contentString = jsonBody;
 			}
 			if (signedWithHMAC != null) {
 				stickHeaderMap(currentDate, getFullHMAC(signedWithHMAC));
@@ -118,10 +119,21 @@ public class APIContentBuilder {
 		Mac mac = Mac.getInstance(HMAC_SHA1_ALGORITHM);
 		mac.init(signingKey);		
 		byte[] rawHmac = mac.doFinal(data.getBytes());		
-		String result = new String(Base64.encodeBase64(rawHmac));		
+		//String result = new String(Base64.encodeBase64(rawHmac));
+		String result = bytesToHex(rawHmac);	
 		return result;
 	}
-
+	
+	public static String bytesToHex(byte[] bytes) {
+	    char[] hexChars = new char[bytes.length * 2];
+	    for ( int j = 0; j < bytes.length; j++ ) {
+	        int v = bytes[j] & 0xFF;
+	        hexChars[j * 2] = hexArray[v >>> 4];
+	        hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+	    }
+	    return new String(hexChars);
+	}
+	
 	private String calculateMD5(String contentToEncode)
 			throws NoSuchAlgorithmException {
 		MessageDigest digest = MessageDigest.getInstance("MD5");
@@ -134,6 +146,10 @@ public class APIContentBuilder {
 		return headersAndBody;
 	}
 
+	public String getContent() {
+		return contentString;
+	}
+	
 	public String toString() {
 		return null;
 	}

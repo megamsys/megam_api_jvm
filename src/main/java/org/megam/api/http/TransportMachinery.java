@@ -44,15 +44,8 @@ public class TransportMachinery {
 		HttpPost httppost = new HttpPost(nuts.urlString());
 		System.out.println("NUTS"+nuts.toString());
 		if (nuts.headers() != null) {
-			for (Map.Entry<String, String> headerEntry : nuts.headers().entrySet()) {				
-				//this if condition is set for twilio Rest API to add credentials to DefaultHTTPClient, conditions met twilio work.
-				if(headerEntry.getKey().equalsIgnoreCase("provider") & headerEntry.getValue().equalsIgnoreCase(nuts.headers().get("provider"))) {
-					httpclient.getCredentialsProvider().setCredentials(new AuthScope(AuthScope.ANY_HOST, AuthScope.ANY_PORT), new UsernamePasswordCredentials(nuts.headers().get("account_sid"), nuts.headers().get("oauth_token")));
-				}
-				//this else part statements for other providers
-				else {
-				    httppost.addHeader(headerEntry.getKey(), headerEntry.getValue());					 
-				}
+			for (Map.Entry<String, String> headerEntry : nuts.headers().entrySet()) {	
+				httppost.addHeader(headerEntry.getKey(), headerEntry.getValue());					
 			}
 		}
 		if(nuts.fileEntity()!=null) {

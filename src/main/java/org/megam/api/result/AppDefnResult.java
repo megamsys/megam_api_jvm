@@ -33,15 +33,19 @@ import org.megam.api.info.NodeInfo;
  */
 public class AppDefnResult {
 	private String jsonString;
-	private JSONObject json;
+	private JSONObject json;	
 
 	public AppDefnResult(String jsonString) throws APIInvokeException{
-		this.jsonString = jsonString;
-		jsonParser();
+		this.jsonString = jsonString;		
+		this.json = jsonParser();
 	}
 
 	public String json() {
-		return jsonString;
+		String js;
+		js = json.get("results").toString();			
+		js = js.substring(0,js.length()-1);
+		js = js.substring(1);		
+		return js;
 
 	}
 
@@ -49,12 +53,13 @@ public class AppDefnResult {
 		return json;
 	}
 
-	public void jsonParser() throws APIInvokeException{ 
+	public JSONObject jsonParser() throws APIInvokeException{ 
 		try {
-		JSONParser parser = new JSONParser();
-		Object object = parser.parse(jsonString);
+		JSONParser parser = new JSONParser();		
+		Object object = parser.parse(jsonString);		
 		JSONObject tot_json = (JSONObject) object;		
-		json = tot_json;
+		json = tot_json;		
+		return json;
 		}
 		catch (ParseException pe) {
 			throw new APIInvokeException("", pe);
