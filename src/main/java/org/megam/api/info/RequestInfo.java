@@ -52,8 +52,7 @@ public class RequestInfo {
 	private Map<String, String> appdefns = new HashMap<String, String>();
 	//private Map<String, String> results = new HashMap<String, String>();
 	// private NodeAppDefns appdefns;
-	private String created_at;
-
+	private String created_at;	
 	// use gson to make it as JSON
 
 	public String json() throws APIInvokeException {
@@ -88,8 +87,13 @@ public class RequestInfo {
 		return node_name;
 	}
 
-	public <RUNTIMEEXEC> String getRunTimeExec() {
-		return map().get(RUNTIMEEXEC);
+	public <RUNTIMEEXEC> String getRunTimeExec() {		
+		String word = "#[start]";
+		String text = map().get(RUNTIMEEXEC);
+		if (text.contains(word)) {
+			text = text.replace(word, "build");
+		}		
+		return text;
 	}
 
 	public <appdefns> Map<String, String> map() {
